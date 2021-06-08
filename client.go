@@ -15,13 +15,15 @@ import (
 const (
 	baseUrl    = "https://api.webflow.com"
 	apiVersion = "1.0.0"
+	pageSize   = 20
 )
 
 // webflowClient provides api calls as public methods
 type webflowClient struct {
-	token   string
-	baseUrl string
-	client  http.Client
+	token    string
+	baseUrl  string
+	client   http.Client
+	pageSize uint
 }
 
 // request makes a request to webflowClient's API
@@ -94,6 +96,32 @@ func (m *webflowClient) GetCollections(siteId string) ([]response.Collection, er
 	return data, err
 }
 
+// GetItems returns list of items from specified collection
+// https://developers.webflow.com/#get-all-items-for-a-collection
+func (m *webflowClient) GetItems(collectionId string, limit int, offset int) ([]response.Item, error) {
+	var data []response.Item
+	err := m.request(request.Envelope{
+		Method: request.MethodGet,
+		Path:   fmt.Sprintf("/collections/%s/items", collectionId),
+		Body:   nil,
+	}, &data)
+
+	return data, err
+}
+
+// PaginateItems wraps GetItems method for easier paginating
+// first page starts with 0
+func (m *webflowClient) PaginateItems(collectionId string, page uint) ([]response.Item, error) {
+	var data []response.Item
+	err := m.request(request.Envelope{
+		Method: request.MethodGet,
+		Path:   fmt.Sprintf("/collections/%s/items?limit=%d&offset=%d", collectionId, m.pageSize, page*m.pageSize),
+		Body:   nil,
+	}, &data)
+
+	return data, err
+}
+
 // NewClient returns new instance for the client structure
 func NewClient(secret string) (*webflowClient, error) {
 	if secret == "" {
@@ -105,5 +133,6 @@ func NewClient(secret string) (*webflowClient, error) {
 		client: http.Client{
 			Timeout: time.Second * 10,
 		},
+		pageSize: pageSize,
 	}, nil
 }
