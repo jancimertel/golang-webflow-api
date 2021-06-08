@@ -98,21 +98,33 @@ func (m *WebflowClient) GetCollections(siteId string) ([]response.Collection, er
 
 // GetItems returns list of items from specified collection
 // https://developers.webflow.com/#get-all-items-for-a-collection
-func (m *WebflowClient) GetItems(collectionId string, limit uint, offset uint) ([]response.Item, error) {
-	var data response.Items
+func (m *WebflowClient) GetItems(collectionId string, limit uint, offset uint, optionalType ...interface{}) (interface{}, error) {
+	var data response.GenericItems
 	err := m.request(request.Envelope{
 		Method: request.MethodGet,
 		Path:   fmt.Sprintf("/collections/%s/items?limit=%d&offset=%d", collectionId, limit, offset),
 		Body:   nil,
 	}, &data)
 
-	return data.Items, err
+	if err != nil {
+		return nil, err
+	}
+
+	if len(optionalType) > 0 {
+		err = json.Unmarshal(data.Items, optionalType[0])
+		return optionalType[0], err
+	} else {
+		var genericItems []response.Item
+		err = json.Unmarshal(data.Items, &genericItems)
+		return genericItems, err
+	}
+
 }
 
 // PaginateItems wraps GetItems method for easier paginating
 // first page starts with 0
-func (m *WebflowClient) PaginateItems(collectionId string, page uint) ([]response.Item, error) {
-	return m.GetItems(collectionId, m.pageSize, page * m.pageSize)
+func (m *WebflowClient) PaginateItems(collectionId string, page uint, optionalType ...interface{}) (interface{}, error) {
+	return m.GetItems(collectionId, m.pageSize, page*m.pageSize, optionalType...)
 }
 
 // NewClient returns new instance for the client structure

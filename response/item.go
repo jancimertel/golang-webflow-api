@@ -1,6 +1,9 @@
 package response
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Item struct {
 	Archived       bool      `json:"_archived"`
@@ -25,14 +28,15 @@ type Item struct {
 }
 
 type File struct {
-	FileId string `json:"fileId"`
-	Url    string `json:"url"`
+	Alt    interface{} `json:"alt"`
+	FileId string      `json:"fileId"`
+	Url    string      `json:"url"`
 }
 
-type Items struct {
-	Items  []Item `json:"items"`
-	Count  int    `json:"count"`
-	Limit  int    `json:"limit"`
-	Offset int    `json:"offset"`
-	Total  int    `json:"total"`
+type GenericItems struct {
+	Items  json.RawMessage `json:"items"`
+	Count  int             `json:"count"`
+	Limit  int             `json:"limit"`
+	Offset int             `json:"offset"`
+	Total  int             `json:"total"`
 }
