@@ -18,16 +18,16 @@ const (
 	pageSize   = 20
 )
 
-// webflowClient provides api calls as public methods
-type webflowClient struct {
+// WebflowClient provides api calls as public methods
+type WebflowClient struct {
 	token    string
 	baseUrl  string
 	client   http.Client
 	pageSize uint
 }
 
-// request makes a request to webflowClient's API
-func (m *webflowClient) request(requestData request.Envelope, responseData interface{}) error {
+// request makes a request to WebflowClient's API
+func (m *WebflowClient) request(requestData request.Envelope, responseData interface{}) error {
 	bytesData, err := json.Marshal(requestData.Body)
 	if err != nil {
 		return err
@@ -72,7 +72,7 @@ func (m *webflowClient) request(requestData request.Envelope, responseData inter
 
 // GetSites returns list of sites associated with the curernt account
 // https://developers.webflow.com/#list-sites
-func (m *webflowClient) GetSites() ([]response.Site, error) {
+func (m *WebflowClient) GetSites() ([]response.Site, error) {
 	var data []response.Site
 	err := m.request(request.Envelope{
 		Method: request.MethodGet,
@@ -85,7 +85,7 @@ func (m *webflowClient) GetSites() ([]response.Site, error) {
 
 // GetCollections returns list of collections for specific site
 // https://developers.webflow.com/#collections
-func (m *webflowClient) GetCollections(siteId string) ([]response.Collection, error) {
+func (m *WebflowClient) GetCollections(siteId string) ([]response.Collection, error) {
 	var data []response.Collection
 	err := m.request(request.Envelope{
 		Method: request.MethodGet,
@@ -98,7 +98,7 @@ func (m *webflowClient) GetCollections(siteId string) ([]response.Collection, er
 
 // GetItems returns list of items from specified collection
 // https://developers.webflow.com/#get-all-items-for-a-collection
-func (m *webflowClient) GetItems(collectionId string, limit int, offset int) ([]response.Item, error) {
+func (m *WebflowClient) GetItems(collectionId string, limit int, offset int) ([]response.Item, error) {
 	var data []response.Item
 	err := m.request(request.Envelope{
 		Method: request.MethodGet,
@@ -111,7 +111,7 @@ func (m *webflowClient) GetItems(collectionId string, limit int, offset int) ([]
 
 // PaginateItems wraps GetItems method for easier paginating
 // first page starts with 0
-func (m *webflowClient) PaginateItems(collectionId string, page uint) ([]response.Item, error) {
+func (m *WebflowClient) PaginateItems(collectionId string, page uint) ([]response.Item, error) {
 	var data []response.Item
 	err := m.request(request.Envelope{
 		Method: request.MethodGet,
@@ -123,11 +123,11 @@ func (m *webflowClient) PaginateItems(collectionId string, page uint) ([]respons
 }
 
 // NewClient returns new instance for the client structure
-func NewClient(secret string) (*webflowClient, error) {
+func NewClient(secret string) (*WebflowClient, error) {
 	if secret == "" {
 		return nil, errors.New("missing webflow authentication token")
 	}
-	return &webflowClient{
+	return &WebflowClient{
 		token:   secret,
 		baseUrl: baseUrl,
 		client: http.Client{
