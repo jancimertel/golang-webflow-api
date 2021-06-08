@@ -1,15 +1,15 @@
-package webflow
+package gowebflow
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/jancimertel/gowebflow/request"
+	"github.com/jancimertel/gowebflow/response"
 	"io/ioutil"
 	"net/http"
 	"time"
-	"webflow/request"
-	"webflow/response"
 )
 
 const (

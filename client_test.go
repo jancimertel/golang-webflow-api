@@ -1,4 +1,4 @@
-package webflow
+package gowebflow
 
 import (
 	"reflect"

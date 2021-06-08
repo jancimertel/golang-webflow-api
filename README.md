@@ -1,2 +1,2 @@
-# golang-webflow-api
+# gowebflow
 Golang bindings for webflow api
