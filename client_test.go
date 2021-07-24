@@ -1,6 +1,7 @@
 package gowebflow
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -35,6 +36,32 @@ func TestNewClient(t *testing.T) {
 			if !reflect.DeepEqual(got == nil, tt.wantNil) {
 				t.Errorf("NewClient() got = %v, want nil = %v", got, tt.wantNil)
 			}
+		})
+	}
+}
+
+func TestNewClientOptionsPageSize(t *testing.T) {
+	tests := []struct {
+		name    string
+		option ClientOption
+		wantPageSize uint
+	}{
+		{
+			name:         "empty option",
+			option:       nil,
+			wantPageSize: pageSize,
+		},
+		{
+			name:         "provided option",
+			option:       WithPageSize(1),
+			wantPageSize: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cl, err := NewClient("random", tt.option)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.wantPageSize, cl.pageSize)
 		})
 	}
 }

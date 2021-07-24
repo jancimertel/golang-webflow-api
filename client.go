@@ -115,7 +115,7 @@ func (m *WebflowClient) GetItems(collectionId string, limit uint, offset uint, i
 		return false, err
 	}
 
-	return data.Offset + data.Count < data.Total, err
+	return data.Offset+data.Count < data.Total, err
 }
 
 // PaginateItems wraps GetItems method for easier paginating
@@ -124,17 +124,33 @@ func (m *WebflowClient) PaginateItems(collectionId string, page uint, itemsConta
 	return m.GetItems(collectionId, m.pageSize, page*m.pageSize, itemsContainer)
 }
 
+type ClientOption func(client *WebflowClient)
+
+func WithPageSize(size uint) ClientOption {
+	return func(client *WebflowClient) {
+		client.pageSize = size
+	}
+}
+
 // NewClient returns new instance for the client structure
-func NewClient(secret string) (*WebflowClient, error) {
+func NewClient(secret string, options ...ClientOption) (*WebflowClient, error) {
 	if secret == "" {
 		return nil, errors.New("missing webflow authentication token")
 	}
-	return &WebflowClient{
+	client := &WebflowClient{
 		token:   secret,
 		baseUrl: baseUrl,
 		client: http.Client{
 			Timeout: time.Second * 10,
 		},
 		pageSize: pageSize,
-	}, nil
+	}
+
+	for _, option := range options {
+		if option != nil {
+			option(client)
+		}
+	}
+
+	return client, nil
 }
